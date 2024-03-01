@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "express": "^4.16.4",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "mongodb": "6.3",
     "netlify-lambda": "^1.4.3",
-    "serverless-http": "^1.9.1"
+    "serverless-http": "^1.9.1",
+    "slugify": "^1.6.6"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "export NODE_OPTIONS=--openssl-legacy-provider && NODE_ENV=development ./node_modules/.bin/netlify-lambda serve src",
     "build": "export NODE_OPTIONS=--openssl-legacy-provider && NODE_ENV=production ./node_modules/.bin/netlify-lambda build src"
@@ -23,5 +26,10 @@
   "bugs": {
     "url": "https://github.com/owenconti/netlify-express/issues"
   },
-  "homepage": "https://github.com/owenconti/netlify-express#readme"
+  "homepage": "https://github.com/owenconti/netlify-express#readme",
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "babel-loader": "^9.1.3"
+  }
 }
