@@ -4,7 +4,7 @@ require("dotenv").config();
 const cors = require('cors');
 
 const corsOptions = {
-  origin: 'http://localhost:4200',
+  origin: '*',
   credentials: false,
   optionSuccessStatus: 200
  };
@@ -47,8 +47,8 @@ const axios = require('axios');
 router.get("/callWebsite/:id", (req, res) => {
   // const expires = body.exp.toUTCString();
   console.log(req.params['id']);
-res.cookie('id_token', req.params['id']);
-res.redirect(302, 'http://localhost:4200');
+  res.cookie('id_token', req.params['id']);
+  res.redirect(302, 'http://localhost:4200');
 })
 
 router.post("/addEncryption", async (req, res) => {
