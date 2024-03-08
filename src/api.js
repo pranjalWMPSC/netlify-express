@@ -48,7 +48,7 @@ router.get("/callWebsite/:id", (req, res) => {
   // const expires = body.exp.toUTCString();
   console.log(req.params['id']);
   res.cookie('id_token', req.params['id']);
-  res.redirect(302, 'http://localhost:4200');
+  res.redirect(302, 'https://wmpscpresscreening.netlify.app/');
 })
 
 router.post("/addEncryption", async (req, res) => {
