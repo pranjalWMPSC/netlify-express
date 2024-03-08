@@ -54,7 +54,7 @@ router.get("/callWebsite/:id", (req, res) => {
 router.post("/addEncryption", async (req, res) => {
 
   res.json({
-    req: req.data
+    req: req.query.id
   });
 //   const key = new NodeRSA();
 //   key.importKey(publicKey, 'pkcs8-public-pem');
