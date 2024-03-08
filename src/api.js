@@ -53,56 +53,59 @@ router.get("/callWebsite/:id", (req, res) => {
 
 router.post("/addEncryption", async (req, res) => {
 
-  const key = new NodeRSA();
-  key.importKey(publicKey, 'pkcs8-public-pem');
-  
-  const data = JSON.parse(req.body);
-  const encrypted = key.encrypt(JSON.stringify(data), 'base64');
-
-
-  const myHeaders = new Headers();
-myHeaders.append("apiKey", "uKiz0x8w9yrAm3WoG9wMrLm7DvN2Rlk7jV4dv93i1cmEgL414tN7DAdqSpSvgXvH");
-myHeaders.append("Content-Type", "application/json");
-myHeaders.append("Accept", "application/json");
-
-const raw = JSON.stringify({
-  "collection": "totCandidateData",
-  "database": "wmpsc-api-collection",
-  "dataSource": "wmpsc-mongo",
-  "document": {data: encrypted}
-});
-
-
-const requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw,
-  redirect: "follow"
-};
-
-await fetch("https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint/data/v1/action/insertOne", requestOptions)
-  .then((response) => response.text())
-  .then((result) => {
-    let data = JSON.parse(result)
-    if(data.insertedId === undefined){
-      res.json({
-        status: "Error",
-        result: result
-      })
-    } else {
-      res.json({
-        status: "Completed!",
-        statusCode: 200,
-        results: data.insertedId
-      });
-    }
-  })
-  .catch((error) => {
-    res.json({
-      status: "Error",
-      result: error
-    })
+  res.json({
+    req
   });
+//   const key = new NodeRSA();
+//   key.importKey(publicKey, 'pkcs8-public-pem');
+  
+//   const data = JSON.parse(req.body);
+//   const encrypted = key.encrypt(JSON.stringify(data), 'base64');
+
+
+//   const myHeaders = new Headers();
+// myHeaders.append("apiKey", "uKiz0x8w9yrAm3WoG9wMrLm7DvN2Rlk7jV4dv93i1cmEgL414tN7DAdqSpSvgXvH");
+// myHeaders.append("Content-Type", "application/json");
+// myHeaders.append("Accept", "application/json");
+
+// const raw = JSON.stringify({
+//   "collection": "totCandidateData",
+//   "database": "wmpsc-api-collection",
+//   "dataSource": "wmpsc-mongo",
+//   "document": {data: encrypted}
+// });
+
+
+// const requestOptions = {
+//   method: "POST",
+//   headers: myHeaders,
+//   body: raw,
+//   redirect: "follow"
+// };
+
+// await fetch("https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint/data/v1/action/insertOne", requestOptions)
+//   .then((response) => response.text())
+//   .then((result) => {
+//     let data = JSON.parse(result)
+//     if(data.insertedId === undefined){
+//       res.json({
+//         status: "Error",
+//         result: result
+//       })
+//     } else {
+//       res.json({
+//         status: "Completed!",
+//         statusCode: 200,
+//         results: data.insertedId
+//       });
+//     }
+//   })
+//   .catch((error) => {
+//     res.json({
+//       status: "Error",
+//       result: error
+//     })
+//   });
 
 })
 
