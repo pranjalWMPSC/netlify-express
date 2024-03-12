@@ -51,6 +51,31 @@ router.get("/callWebsite/:id", (req, res) => {
   res.redirect(302, 'https://wmpscpresscreening.netlify.app/');
 })
 
+router.post("/postResult", (req,res) => {
+  const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+myHeaders.append("Cookie", "2dadff71a3=c2ab5ebf8f97e7d80d5e35edddd48ba6; _zcsr_tmp=1ea94d3f-b1a4-4609-9606-9373df9aa39a; zipccn=1ea94d3f-b1a4-4609-9606-9373df9aa39a");
+
+let data = req.body.result;
+const raw = JSON.stringify({
+  "emailId": data.emailId,
+  "result": data.result,
+  "resultId": data.resultId
+});
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+};
+
+fetch("https://flow.zoho.in/60024604063/flow/webhook/incoming?zapikey=1001.50ffc92fb74215b43a19e72ba74870e5.5da8a2d05134583f90b0a4e873a7b550&isdebug=false", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
+})
+
 router.post("/addEncryption", async (req, res) => {
 
 var firstName = req.query.firstName;
