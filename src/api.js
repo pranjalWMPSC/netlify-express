@@ -56,7 +56,7 @@ router.post("/postResult", (req,res) => {
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Cookie", "2dadff71a3=c2ab5ebf8f97e7d80d5e35edddd48ba6; _zcsr_tmp=1ea94d3f-b1a4-4609-9606-9373df9aa39a; zipccn=1ea94d3f-b1a4-4609-9606-9373df9aa39a");
 
-let data = req.body.result;
+let data = req.body;
 const raw = JSON.stringify({
   "emailId": data.emailId,
   "result": data.result,
