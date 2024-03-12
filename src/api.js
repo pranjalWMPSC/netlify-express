@@ -74,13 +74,13 @@ const requestOptions = {
 
 fetch("https://flow.zoho.in/60024604063/flow/webhook/incoming?zapikey=1001.50ffc92fb74215b43a19e72ba74870e5.5da8a2d05134583f90b0a4e873a7b550&isdebug=false", requestOptions)
   .then((response) => response.text())
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error));
-
-  res.json({
-    status: "Success",
-    result: "Answer sent"
-  })
+  .then((result) => {console.log(result)
+    res.json({
+      status: "Success",
+      result: "Answer sent"
+    })})
+  .catch((error) => {console.error(error)
+  console.error(error)});
 })
 
 router.post("/addEncryption", async (req, res) => {
