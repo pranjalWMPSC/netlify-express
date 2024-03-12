@@ -76,6 +76,11 @@ fetch("https://flow.zoho.in/60024604063/flow/webhook/incoming?zapikey=1001.50ffc
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.error(error));
+
+  res.json({
+    status: "Success",
+    result: "Answer sent"
+  })
 })
 
 router.post("/addEncryption", async (req, res) => {
