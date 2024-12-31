@@ -295,6 +295,10 @@ await fetch("https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint
   
 });
 
+router.get("/run-check", async(req,res) => {
+  res.json("Running");
+})
+
 
 
 
