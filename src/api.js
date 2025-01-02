@@ -102,24 +102,10 @@ router.post("/postResult", (req, res) => {
     });
 });
 
-router.post("/addEncryption", async (req, res) => {
-  var firstName = req.query.firstName;
-  var lastName = req.query.lastName;
-  var emailId = req.query.emailId;
-  var jobRole = req.query.jobRole;
-  var date = new Date();
+router.post("/registerTP", async (req, res) => {
+  
+  var tpData = req.body;
 
-  var data = {
-    firstName: firstName,
-    lastName: lastName,
-    emailId: emailId,
-    jobRole: jobRole,
-    date: date,
-  };
-  const key = new NodeRSA();
-  key.importKey(publicKey, "pkcs8-public-pem");
-
-  const encrypted = key.encrypt(JSON.stringify(data), "base64");
 
   const myHeaders = new Headers();
   myHeaders.append(
@@ -130,10 +116,10 @@ router.post("/addEncryption", async (req, res) => {
   myHeaders.append("Accept", "application/json");
 
   const raw = JSON.stringify({
-    collection: "totCandidateData",
+    collection: "tp",
     database: "wmpsc-api-collection",
     dataSource: "wmpsc-mongo",
-    document: { data: encrypted },
+    document: tpData,
   });
 
   const requestOptions = {
@@ -170,6 +156,7 @@ router.post("/addEncryption", async (req, res) => {
       });
     });
 });
+
 
 router.post("/getTP", async (req, res) => {
   // console.log(JSON.parse(req.params));
@@ -273,27 +260,9 @@ router.get("/getCandidate", async (req, res) => {
     });
 });
 
-router.post("/addCandidate", async (req, res) => {
+router.get("/checkCandidate", async (req, res) => {
 
-  var candidateData = req.body;
-  console.log(candidateData);
-  var firstName = req.query.firstName;
-  var lastName = req.query.lastName;
-  var emailId = req.query.emailId;
-  var jobRole = req.query.jobRole;
-  var date = new Date();
-
-  var data = {
-    firstName: firstName,
-    lastName: lastName,
-    emailId: emailId,
-    jobRole: jobRole,
-    date: date,
-  };
-  // const key = new NodeRSA();
-  // key.importKey(publicKey, "pkcs8-public-pem");
-
-  // const encrypted = key.encrypt(JSON.stringify(data), "base64");
+  var aadhar = req.query.aadhar;
 
   const myHeaders = new Headers();
   myHeaders.append(
@@ -307,7 +276,57 @@ router.post("/addCandidate", async (req, res) => {
     collection: "candidate",
     database: "wmpsc-api-collection",
     dataSource: "wmpsc-mongo",
-    document: candidateData
+    filter: {
+      aadhar: aadhar
+    },
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  fetch(
+    "https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint/data/v1/action/find",
+    requestOptions
+  )
+    .then((response) => response.text())
+    .then((result) => {
+      result = JSON.parse(result);
+      console.log(result);
+      res.json({
+        result: result,
+        res: 200,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.json({
+        error: error,
+      });
+    });
+});
+
+router.post("/addCandidate", async (req, res) => {
+  
+  var candidateData = req.body;
+
+
+  const myHeaders = new Headers();
+  myHeaders.append(
+    "apiKey",
+    "uKiz0x8w9yrAm3WoG9wMrLm7DvN2Rlk7jV4dv93i1cmEgL414tN7DAdqSpSvgXvH"
+  );
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Accept", "application/json");
+
+  const raw = JSON.stringify({
+    collection: "candidate",
+    database: "wmpsc-api-collection",
+    dataSource: "wmpsc-mongo",
+    document: candidateData,
   });
 
   const requestOptions = {
@@ -345,144 +364,6 @@ router.post("/addCandidate", async (req, res) => {
     });
 });
 
-router.post("/getDataFromEncryption", async (req, res) => {
-  console.log(req.params);
-  var id = JSON.parse(req.body);
-  const myHeaders = new Headers();
-  myHeaders.append(
-    "apiKey",
-    "uKiz0x8w9yrAm3WoG9wMrLm7DvN2Rlk7jV4dv93i1cmEgL414tN7DAdqSpSvgXvH"
-  );
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Accept", "application/json");
-
-  const raw = JSON.stringify({
-    collection: "tp",
-    database: "wmpsc-api-collection",
-    dataSource: "wmpsc-mongo",
-    filter: {
-      _id: {
-        $oid: id.id,
-      },
-    },
-  });
-
-  const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  fetch(
-    "https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint/data/v1/action/findOne",
-    requestOptions
-  )
-    .then((response) => response.text())
-    .then((result) => {
-      result = JSON.parse(result);
-      const key = new NodeRSA();
-
-      const privatePem = privateKey;
-      key.importKey(privatePem, "pkcs1-pem");
-
-      // read the encrypted data from service call
-      const decryptedString = key.decrypt(result.document.data, "utf8");
-
-      // console.log('\nDECRYPTED string: ');
-      // console.log(decryptedString);
-      const decrypedObject = JSON.parse(decryptedString);
-      res.json({
-        result: decrypedObject,
-        res: 200,
-      });
-    })
-    .catch((error) => {
-      res.json({
-        error: error,
-      });
-    });
-});
-
-router.post("/encrypt", (req, res) => {
-  const key = new NodeRSA();
-  key.importKey(publicKey, "pkcs8-public-pem");
-
-  const data = JSON.parse(req.body);
-  const encrypted = key.encrypt(JSON.stringify(data), "base64");
-  console.log("ENCRYPTED:");
-  console.log(encrypted);
-  console.log(req);
-  res.json({
-    status: "OK",
-    data: encrypted,
-  });
-});
-
-router.post("/decrypt", (req, res) => {
-  const key = new NodeRSA();
-
-  data = JSON.parse(req.body);
-  console.log(data.decrypt);
-  // TODO: read private key from file and keep it secret and secure. Do not put this private key into code!
-  const privatePem = privateKey;
-  key.importKey(privatePem, "pkcs1-pem");
-
-  // read the encrypted data from service call
-  const decryptedString = key.decrypt(data.decrypt, "utf8");
-
-  console.log("\nDECRYPTED string: ");
-  console.log(decryptedString);
-  const decrypedObject = JSON.parse(decryptedString);
-  res.json({
-    status: "OK",
-    data: decrypedObject,
-  });
-});
-
-router.get("/test-get-api", async (req, res) => {
-  console.log(req.query.id);
-  const myHeaders = new Headers();
-  myHeaders.append(
-    "apiKey",
-    "uKiz0x8w9yrAm3WoG9wMrLm7DvN2Rlk7jV4dv93i1cmEgL414tN7DAdqSpSvgXvH"
-  );
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Accept", "application/json");
-
-  const raw = JSON.stringify({
-    collection: "questions",
-    database: "wmpsc-api-collection",
-    dataSource: "wmpsc-mongo",
-    filter: {
-      jobRole: req.query.id,
-    },
-  });
-
-  const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  await fetch(
-    "https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint/data/v1/action/insertOne",
-    requestOptions
-  )
-    .then((response) => response.text())
-    .then((result) => {
-      console.log(JSON.parse(result));
-      // let data = result
-      // // data = JSON.parse(data.document);
-      let data = JSON.parse(result);
-      res.json({
-        hello: "hi!",
-        results: data.document.name,
-      });
-    })
-    .catch((error) => console.error(error));
-});
 
 router.get("/run-check", async (req, res) => {
   res.json("Running");
