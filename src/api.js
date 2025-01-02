@@ -2,6 +2,9 @@ const express = require("express");
 const serverless = require("serverless-http");
 require("dotenv").config(); 
 const cors = require('cors');
+const morganBody = require("morgan-body")
+const bodyParser = require("body-parser")
+
 
 const corsOptions = {
   origin: '*',
@@ -41,6 +44,16 @@ const app = express();
 const router = express.Router();
 
 app.use(cors(corsOptions));
+
+app.use(bodyParser.json());
+
+// hook morganBody to express app
+morganBody(app, {logAllReqHeader:true, maxBodyLength:5000});
+
+var fs = require('fs')
+var morgan = require('morgan')
+var path = require('path')
+
 
 const axios = require('axios');
 
@@ -150,9 +163,57 @@ await fetch("https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint
 
 })
 
+router.post("/getTP", async (req, res) => {
+
+  // console.log(JSON.parse(req.params));
+  // var id = JSON.parse(JSON.stringify(req));
+  var email = req.body.userName;
+  var password = req.body.password;
+  console.log(email);
+  const myHeaders = new Headers();
+  myHeaders.append("apiKey", "uKiz0x8w9yrAm3WoG9wMrLm7DvN2Rlk7jV4dv93i1cmEgL414tN7DAdqSpSvgXvH");
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Accept", "application/json");
+  
+  const raw = JSON.stringify({
+    "collection": "tp",
+    "database": "wmpsc-api-collection",
+    "dataSource": "wmpsc-mongo",
+    "filter": {
+      "email": email,
+      "password": password
+    }
+  });
+  
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+  };
+  
+  fetch("https://ap-south-1.aws.data.mongodb-api.com/app/data-kytrg/endpoint/data/v1/action/findOne", requestOptions)
+    .then((response) => response.text())
+    .then((result) => {
+      result = JSON.parse(result);
+      console.log(result);
+      res.json({
+        result: result,
+        res: 200
+      })
+    })
+    .catch((error) => {
+      console.log(error);
+      res.json({
+        error: error
+      })
+    });
+
+})
+
 router.post("/getDataFromEncryption", async (req, res) => {
 
-  console.log(req.body);
+  console.log(req.params);
   var id = JSON.parse(req.body);
   const myHeaders = new Headers();
   myHeaders.append("apiKey", "uKiz0x8w9yrAm3WoG9wMrLm7DvN2Rlk7jV4dv93i1cmEgL414tN7DAdqSpSvgXvH");
@@ -160,7 +221,7 @@ router.post("/getDataFromEncryption", async (req, res) => {
   myHeaders.append("Accept", "application/json");
   
   const raw = JSON.stringify({
-    "collection": "totCandidateData",
+    "collection": "tp",
     "database": "wmpsc-api-collection",
     "dataSource": "wmpsc-mongo",
     "filter": {
